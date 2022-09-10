@@ -8,6 +8,7 @@ const AppProvider = ({ children }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [selectedMeal, setSelectedMeal] = useState(null);
+  const [favorites, setFavorites] = useState([]);
 
   // api urls
   const allMealsUrl = `https://www.themealdb.com/api/json/v1/1/search.php?s=`;
@@ -34,15 +35,33 @@ const AppProvider = ({ children }) => {
 
   const selectMeal = (idMeal, favoriteMeal) => {
     let meal;
-
-    meal = meals.find((meal) => meal.idMeal === idMeal);
+    if (favoriteMeal) {
+      meal = favorites.find((meal) => meal.idMeal === idMeal);
+    } else {
+      meal = meals.find((meal) => meal.idMeal === idMeal);
+    }
     setSelectedMeal(meal);
     setShowModal(true);
   };
 
   const closeModal = () => {
     setShowModal(false);
-  }
+  };
+
+  const addToFavorites = (idMeal) => {
+    const alreadyFavorite = favorites.find((meal) => meal.idMeal === idMeal);
+    if (alreadyFavorite) return;
+    const meal = meals.find((meal) => meal.idMeal === idMeal);
+    const updatedFavorites = [...favorites, meal];
+    setFavorites(updatedFavorites);
+  };
+
+  const removeFromFavorites = (idMeal) => {
+    // keep all except the one with the idMeal
+    const updatedFavorites = favorites.filter((meal) => meal.idMeal !== idMeal);
+    // set new to filtered array without the one we need to remove.
+    setFavorites(updatedFavorites);
+  };
 
   useEffect(() => {
     fetchMeals(allMealsUrl);
@@ -64,7 +83,10 @@ const AppProvider = ({ children }) => {
         showModal,
         selectMeal,
         selectedMeal,
-        closeModal
+        closeModal,
+        favorites,
+        addToFavorites,
+        removeFromFavorites,
       }}
     >
       {children}
