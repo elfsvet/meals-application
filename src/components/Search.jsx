@@ -12,9 +12,14 @@ const Search = () => {
     e.preventDefault();
     if (text) {
       setSearchTerm(text);
-      // setText('');
     }
   };
+
+  const handleRandomMeal = () => {
+    setSearchTerm('')
+    setText('')
+    fetchRandomMeal();
+  }
   return (
     <header className='search-container'>
       <form onSubmit={handleSubmit}>
@@ -28,7 +33,7 @@ const Search = () => {
         <button className='btn' type='submit'>
           Search
         </button>
-        <button className='btn btn-hipster' type='btn' onClick={() =>fetchRandomMeal()}>
+        <button className='btn btn-hipster' type='btn' onClick={handleRandomMeal}>
           Surprise Me!
         </button>
       </form>

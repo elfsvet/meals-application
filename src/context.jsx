@@ -6,11 +6,13 @@ const AppProvider = ({ children }) => {
   const [meals, setMeals] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const allMealsUrl = `https://www.themealdb.com/api/json/v1/1/search.php?s=${searchTerm}`;
+  const [showModal, setShowModal] = useState(false);
+  const [selectedMeal, setSelectedMeal] = useState(null);
+
+  // api urls
+  const allMealsUrl = `https://www.themealdb.com/api/json/v1/1/search.php?s=`;
   const randomMealUrl = 'https://www.themealdb.com/api/json/v1/1/random.php';
 
-
-  
   const fetchMeals = async (url) => {
     setLoading(true);
     try {
@@ -25,16 +27,46 @@ const AppProvider = ({ children }) => {
     }
     setLoading(false);
   };
-  
+
   const fetchRandomMeal = () => {
-    fetchMeals(randomMealUrl)
+    fetchMeals(randomMealUrl);
+  };
+
+  const selectMeal = (idMeal, favoriteMeal) => {
+    let meal;
+
+    meal = meals.find((meal) => meal.idMeal === idMeal);
+    setSelectedMeal(meal);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
   }
+
   useEffect(() => {
     fetchMeals(allMealsUrl);
+  }, []);
+
+  useEffect(() => {
+    // if no value return and don't fetchMeals
+    if (!searchTerm) return;
+    fetchMeals(`${allMealsUrl}${searchTerm}`);
   }, [searchTerm]);
 
   return (
-    <AppContext.Provider value={{ meals, loading, setSearchTerm, fetchRandomMeal }}>
+    <AppContext.Provider
+      value={{
+        meals,
+        loading,
+        setSearchTerm,
+        fetchRandomMeal,
+        showModal,
+        selectMeal,
+        selectedMeal,
+        closeModal
+      }}
+    >
       {children}
     </AppContext.Provider>
   );
